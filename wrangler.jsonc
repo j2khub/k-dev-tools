@@ -1,10 +1,12 @@
 {
   "name": "k-dev-tools",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-02-12",
   "vars": {
     "ALADIN_API_KEY": "ttbskyskyma1415001"
   },
   "assets": {
-    "directory": "./out"
+    "directory": "./out",
+    "binding": "ASSETS"
   }
 }

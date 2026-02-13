@@ -40,6 +40,8 @@
   ],
   "exclude": [
     "node_modules",
-    "functions"
+    "functions",
+    "src/worker.ts",
+    "src/api"
   ]
 }
