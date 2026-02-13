@@ -1,6 +1,9 @@
 {
   "name": "k-dev-tools",
   "compatibility_date": "2026-02-12",
+  "vars": {
+    "ALADIN_API_KEY": "ttbskyskyma1415001"
+  },
   "assets": {
     "directory": "./out"
   }

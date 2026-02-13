@@ -8,6 +8,9 @@ import { Wrench } from "lucide-react";
 
 const navLinks = [
   { href: "/tools", label: "도구" },
+  { href: "/finance", label: "금융" },
+  { href: "/steam", label: "Steam" },
+  { href: "/books", label: "도서" },
   { href: "/calendar", label: "달력" },
 ];
 
