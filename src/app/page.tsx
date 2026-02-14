@@ -8,6 +8,7 @@ import {
   Gamepad2,
   BookOpen,
   CalendarDays,
+  CloudSun,
   ArrowRight,
   Star,
   Search,
@@ -55,6 +56,48 @@ interface BookItem {
   cover: string;
   categoryName: string;
   publisher: string;
+}
+
+// ── Weather types & helpers ────────────────────────────
+
+interface WeatherCurrent {
+  temperature_2m: number;
+  weather_code: number;
+}
+
+interface WeatherCity {
+  id: string;
+  name: string;
+  current: WeatherCurrent;
+}
+
+const WEATHER_PREVIEW_CITIES = ["seoul", "busan", "daegu", "jeju"];
+const WMO_EMOJI: Record<number, { text: string; emoji: string }> = {
+  0: { text: "맑음", emoji: "☀️" },
+  1: { text: "대체로 맑음", emoji: "🌤️" },
+  2: { text: "구름 조금", emoji: "⛅" },
+  3: { text: "흐림", emoji: "☁️" },
+  45: { text: "안개", emoji: "🌫️" },
+  48: { text: "안개", emoji: "🌫️" },
+  51: { text: "이슬비", emoji: "🌦️" },
+  53: { text: "이슬비", emoji: "🌦️" },
+  55: { text: "이슬비", emoji: "🌦️" },
+  61: { text: "비", emoji: "🌧️" },
+  63: { text: "비", emoji: "🌧️" },
+  65: { text: "폭우", emoji: "🌧️" },
+  71: { text: "눈", emoji: "❄️" },
+  73: { text: "눈", emoji: "❄️" },
+  75: { text: "폭설", emoji: "❄️" },
+  80: { text: "소나기", emoji: "🌧️" },
+  81: { text: "소나기", emoji: "🌧️" },
+  82: { text: "폭우", emoji: "🌧️" },
+  95: { text: "뇌우", emoji: "⛈️" },
+  96: { text: "뇌우", emoji: "⛈️" },
+  99: { text: "뇌우", emoji: "⛈️" },
+};
+
+function getWmo(code: number) {
+  return WMO_EMOJI[code] ?? { text: "알 수 없음", emoji: "❓" };
 }
 
 // ── Holiday helpers ────────────────────────────────────
@@ -168,6 +211,11 @@ export default function Home() {
   const [booksLoading, setBooksLoading] = useState(true);
   const [booksError, setBooksError] = useState<string | null>(null);
 
+  // Weather state
+  const [weatherCities, setWeatherCities] = useState<Record<string, WeatherCity>>({});
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
+
   // Holiday (sync, no loading needed)
   const nextHoliday = useMemo(() => getNextKoreanHoliday(), []);
 
@@ -217,6 +265,21 @@ export default function Home() {
     }
   }, []);
 
+  const fetchWeather = useCallback(async (signal?: AbortSignal) => {
+    try {
+      const res = await fetch("/api/weather/forecast", { signal });
+      if (!res.ok) throw new Error("날씨 데이터를 불러올 수 없습니다");
+      const json = await res.json();
+      setWeatherCities(json.cities);
+      setWeatherError(null);
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      setWeatherError(e instanceof Error ? e.message : "알 수 없는 오류");
+    } finally {
+      setWeatherLoading(false);
+    }
+  }, []);
+
   const fetchBooks = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await fetch("/api/aladin/bestsellers", { signal });
@@ -238,8 +301,9 @@ export default function Home() {
     fetchFinance(signal);
     fetchSteam(signal);
     fetchBooks(signal);
+    fetchWeather(signal);
     return () => controller.abort();
-  }, [fetchFinance, fetchSteam, fetchBooks]);
+  }, [fetchFinance, fetchSteam, fetchBooks, fetchWeather]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-5 sm:py-8">
@@ -376,6 +440,56 @@ export default function Home() {
                           <span className="sr-only">{up ? "상승" : down ? "하락" : "보합"}</span>
                           {formatChange(symbol, q.change)} ({up ? "+" : ""}{q.changePercent.toFixed(2)}%)
                         </p>
+                      </Link>
+                    );
+                  })}
+            </div>
+          )}
+        </section>
+
+        {/* ── 날씨 ── */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <CloudSun className="h-5 w-5" /> 날씨
+            </h2>
+            <Link href="/weather" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              더보기 →
+            </Link>
+          </div>
+
+          {weatherError ? (
+            <div role="alert" className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+              {weatherError}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {weatherLoading
+                ? Array.from({ length: 4 }, (_, i) => (
+                    <div key={i} className="p-4 rounded-lg border bg-card animate-pulse">
+                      <div className="h-4 bg-muted rounded w-12 mb-3" />
+                      <div className="h-6 bg-muted rounded w-20 mb-2" />
+                      <div className="h-3 bg-muted rounded w-16" />
+                    </div>
+                  ))
+                : WEATHER_PREVIEW_CITIES.map((id) => {
+                    const c = weatherCities[id];
+                    if (!c) return null;
+                    const w = getWmo(c.current.weather_code);
+                    return (
+                      <Link
+                        key={id}
+                        href="/weather"
+                        className="p-4 rounded-lg border bg-card hover:border-primary/30 transition-colors"
+                      >
+                        <p className="text-xs text-muted-foreground mb-1">{c.name}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{w.emoji}</span>
+                          <span className="text-lg font-semibold tabular-nums">
+                            {Math.round(c.current.temperature_2m)}°C
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">{w.text}</p>
                       </Link>
                     );
                   })}

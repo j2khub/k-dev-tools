@@ -11,8 +11,9 @@ const navLinks = [
   { href: "/tools", label: "도구" },
   { href: "/finance", label: "금융" },
   { href: "/books", label: "도서" },
+  { href: "/weather", label: "날씨" },
   { href: "/calendar", label: "달력" },
-  { href: "/steam", label: "Steam" },
+  { href: "/steam", label: "스팀" },
 ];
 
 export function Header() {

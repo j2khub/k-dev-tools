@@ -3,6 +3,7 @@
 import { handleFinanceQuotes } from "./api/finance";
 import { handleSteamFeatured } from "./api/steam";
 import { handleAladinBestsellers } from "./api/aladin";
+import { handleWeatherForecast } from "./api/weather";
 
 interface Env {
   ASSETS: Fetcher;
@@ -40,6 +41,9 @@ export default {
     }
     if (url.pathname === "/api/aladin/bestsellers") {
       return withSecurityHeaders(await handleAladinBestsellers(env.ALADIN_API_KEY));
+    }
+    if (url.pathname === "/api/weather/forecast") {
+      return withSecurityHeaders(await handleWeatherForecast());
     }
 
     // 정적 자산 폴백

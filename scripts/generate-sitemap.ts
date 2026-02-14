@@ -14,7 +14,7 @@ while ((match = hrefRegex.exec(toolsListContent)) !== null) {
   toolHrefs.push(match[1]);
 }
 
-const specialPages = ["/", "/tools", "/finance", "/steam", "/books", "/calendar"];
+const specialPages = ["/", "/tools", "/finance", "/weather", "/steam", "/books", "/calendar"];
 
 const today = new Date().toISOString().split("T")[0];
 

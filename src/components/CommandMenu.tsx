@@ -4,9 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { tools } from "@/lib/tools-list";
-import { Search, CalendarDays } from "lucide-react";
+import { Search, CalendarDays, CloudSun } from "lucide-react";
 
 const pageLinks = [
+  {
+    name: "날씨",
+    description: "주요 도시 현재 날씨, 7일 예보, 시간별 기온",
+    href: "/weather",
+    keywords: "날씨 weather 기온 예보 서울 부산",
+  },
   {
     name: "공휴일 달력",
     description: "국가별 공휴일 확인, 월별 달력 뷰, D-day 표시",
@@ -79,7 +85,11 @@ export function CommandMenu() {
                       }}
                       className="flex items-center gap-2 px-3 py-2 rounded-md text-sm cursor-pointer data-[selected=true]:bg-accent"
                     >
-                      <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      {page.href === "/weather" ? (
+                        <CloudSun className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      ) : (
+                        <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      )}
                       <div className="flex flex-col gap-0.5">
                         <span className="font-medium">{page.name}</span>
                         <span className="text-xs text-muted-foreground">
