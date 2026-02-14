@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowLeft, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { tools } from "@/lib/tools-list";
 import { useFavorites } from "@/hooks/useFavorites";
+import { ToolJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 
 interface ToolLayoutProps {
   title: string;
@@ -13,7 +15,9 @@ interface ToolLayoutProps {
 }
 
 export function ToolLayout({ title, description, children }: ToolLayoutProps) {
-  const currentTool = tools.find((t) => t.name === title);
+  const pathname = usePathname();
+  const hrefFromPath = pathname.replace(/\/$/, "");
+  const currentTool = tools.find((t) => t.href === hrefFromPath) ?? tools.find((t) => t.name === title);
   const { toggle, isFavorite } = useFavorites();
   const favorited = currentTool ? isFavorite(currentTool.href) : false;
 
@@ -24,10 +28,26 @@ export function ToolLayout({ title, description, children }: ToolLayoutProps) {
     : [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-5 sm:py-8">
+      {currentTool && (
+        <>
+          <ToolJsonLd
+            name={currentTool.name}
+            description={currentTool.description}
+            url={currentTool.href}
+          />
+          <BreadcrumbJsonLd
+            items={[
+              { name: "홈", href: "/" },
+              { name: "도구", href: "/tools" },
+              { name: currentTool.name, href: currentTool.href },
+            ]}
+          />
+        </>
+      )}
       <Link
         href="/tools"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 sm:mb-6 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         모든 도구

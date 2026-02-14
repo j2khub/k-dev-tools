@@ -28,7 +28,11 @@ export default function ImageToBase64() {
     setFileSize(file.size);
     const reader = new FileReader();
     reader.onload = (e) => {
-      setBase64(e.target?.result as string);
+      const result = e.target?.result;
+      if (typeof result === "string") setBase64(result);
+    };
+    reader.onerror = () => {
+      console.error("파일 읽기 실패");
     };
     reader.readAsDataURL(file);
   };

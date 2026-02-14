@@ -51,12 +51,12 @@ export function CommandMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="도구 및 페이지 검색">
           <div
             className="fixed inset-0 bg-black/50"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg">
+          <div className="fixed top-[10%] sm:top-[20%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg">
             <Command className="bg-popover border rounded-lg shadow-lg overflow-hidden">
               <Command.Input
                 ref={inputRef}

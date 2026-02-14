@@ -2,9 +2,7 @@
   "name": "k-dev-tools",
   "main": "src/worker.ts",
   "compatibility_date": "2026-02-12",
-  "vars": {
-    "ALADIN_API_KEY": "ttbskyskyma1415001"
-  },
+  // ALADIN_API_KEY는 `wrangler secret put ALADIN_API_KEY`로 설정
   "assets": {
     "directory": "./out",
     "binding": "ASSETS"

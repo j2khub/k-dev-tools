@@ -5,7 +5,6 @@ import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, Download, X, ChevronUp, ChevronDown, Plus } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
 
 interface PdfFileEntry {
   file: File;
@@ -26,6 +25,7 @@ export default function PdfMerge() {
     const entries: PdfFileEntry[] = [];
     for (const file of pdfFiles) {
       try {
+        const { PDFDocument } = await import("pdf-lib");
         const buffer = await file.arrayBuffer();
         const pdf = await PDFDocument.load(buffer);
         entries.push({ file, pageCount: pdf.getPageCount() });
@@ -87,6 +87,7 @@ export default function PdfMerge() {
     setMerging(true);
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const mergedPdf = await PDFDocument.create();
 
       for (const entry of files) {

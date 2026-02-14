@@ -22,7 +22,7 @@ export default function SalaryCalc() {
     const yearlyTotal = salary < 10000 ? salary * 10000 : salary;
 
     // Monthly gross salary
-    const monthlyGross = yearlyTotal / 12;
+    const monthlyGross = Math.floor(yearlyTotal / 12);
 
     // Non-taxable allowance (월 20만원 식대)
     const nonTaxable = 200000;
@@ -105,7 +105,7 @@ export default function SalaryCalc() {
           <Input
             id="salary"
             type="text"
-            value={annualSalary}
+            value={annualSalary ? Number(annualSalary).toLocaleString("ko-KR") : ""}
             onChange={(e) => {
               const value = e.target.value.replace(/[^0-9]/g, "");
               setAnnualSalary(value);

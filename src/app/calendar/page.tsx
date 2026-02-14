@@ -309,10 +309,11 @@ export default function CalendarPage() {
         </div>
 
         {/* Weekday headers */}
-        <div className="grid grid-cols-7 border-b bg-muted/50">
+        <div role="row" className="grid grid-cols-7 border-b bg-muted/50">
           {WEEKDAYS.map((day, i) => (
             <div
               key={day}
+              role="columnheader"
               className={`py-2 text-center text-xs font-medium ${
                 i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : "text-muted-foreground"
               }`}

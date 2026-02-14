@@ -35,14 +35,17 @@ export default function RegexTester() {
 
   const matches = useMemo(() => {
     if (!pattern || !testString) return [];
+    if (pattern.length > 500) return [];
     try {
       const regex = new RegExp(pattern, flags);
       const results: { start: number; end: number; match: string }[] = [];
       let m;
+      const maxIter = 10000;
       if (flags.includes("g")) {
+        let count = 0;
         while ((m = regex.exec(testString)) !== null) {
           results.push({ start: m.index, end: m.index + m[0].length, match: m[0] });
-          if (!m[0]) break;
+          if (!m[0] || ++count >= maxIter) break;
         }
       } else {
         m = regex.exec(testString);

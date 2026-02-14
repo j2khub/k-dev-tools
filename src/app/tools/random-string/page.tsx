@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -41,9 +41,10 @@ export default function RandomStringGenerator() {
     setResult(str);
   }, [length, options]);
 
-  useState(() => {
+  useEffect(() => {
     generate();
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleOption = (key: keyof typeof options) => {
     const next = { ...options, [key]: !options[key] };

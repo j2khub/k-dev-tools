@@ -9,7 +9,12 @@ import {
   BookOpen,
   CalendarDays,
   ArrowRight,
+  Star,
+  Search,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useFavorites } from "@/hooks/useFavorites";
+import { tools } from "@/lib/tools-list";
 import {
   y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026,
 } from "@hyunbinseo/holidays-kr";
@@ -122,9 +127,32 @@ function formatKRW(cents: number | null): string {
   return "₩" + won.toLocaleString("ko-KR");
 }
 
+// ── Greeting ───────────────────────────────────────────
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 6) return "좋은 새벽이에요";
+  if (h < 12) return "좋은 아침이에요";
+  if (h < 18) return "좋은 오후에요";
+  return "좋은 저녁이에요";
+}
+
+function formatToday(): string {
+  return new Date().toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+  });
+}
+
 // ── Component ──────────────────────────────────────────
 
 export default function Home() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+
   // Finance state
   const [quotes, setQuotes] = useState<Record<string, QuoteData>>({});
   const [financeLoading, setFinanceLoading] = useState(true);
@@ -143,42 +171,61 @@ export default function Home() {
   // Holiday (sync, no loading needed)
   const nextHoliday = useMemo(() => getNextKoreanHoliday(), []);
 
-  const fetchFinance = useCallback(async () => {
+  // Favorites
+  const { favorites } = useFavorites();
+  const favoriteTools = useMemo(
+    () => tools.filter((t) => favorites.includes(t.href)).slice(0, 3),
+    [favorites]
+  );
+
+  // Search
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return tools
+      .filter((t) => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [searchQuery]);
+
+  const fetchFinance = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch("/api/finance/quotes");
+      const res = await fetch("/api/finance/quotes", { signal });
       if (!res.ok) throw new Error("금융 데이터를 불러올 수 없습니다");
       const json = await res.json();
       setQuotes(json.quotes);
       setFinanceError(null);
     } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
       setFinanceError(e instanceof Error ? e.message : "알 수 없는 오류");
     } finally {
       setFinanceLoading(false);
     }
   }, []);
 
-  const fetchSteam = useCallback(async () => {
+  const fetchSteam = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch("/api/steam/featured");
+      const res = await fetch("/api/steam/featured", { signal });
       if (!res.ok) throw new Error("Steam 데이터를 불러올 수 없습니다");
       const json = await res.json();
       setSteamGames(json.specials?.slice(0, 4) ?? []);
       setSteamError(null);
     } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
       setSteamError(e instanceof Error ? e.message : "알 수 없는 오류");
     } finally {
       setSteamLoading(false);
     }
   }, []);
 
-  const fetchBooks = useCallback(async () => {
+  const fetchBooks = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch("/api/aladin/bestsellers");
+      const res = await fetch("/api/aladin/bestsellers", { signal });
       if (!res.ok) throw new Error("도서 데이터를 불러올 수 없습니다");
       const json = await res.json();
       setBooks(json.bestsellers?.slice(0, 4) ?? []);
       setBooksError(null);
     } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
       setBooksError(e instanceof Error ? e.message : "알 수 없는 오류");
     } finally {
       setBooksLoading(false);
@@ -186,22 +233,62 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetchFinance();
-    fetchSteam();
-    fetchBooks();
+    const controller = new AbortController();
+    const { signal } = controller;
+    fetchFinance(signal);
+    fetchSteam(signal);
+    fetchBooks(signal);
+    return () => controller.abort();
   }, [fetchFinance, fetchSteam, fetchBooks]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-5 sm:py-8">
       {/* ── Hero ── */}
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-2">AlphaK Tools</h1>
-        <p className="text-muted-foreground">
-          빠르고 무료인 온라인 도구 모음. 내 데이터는 내 브라우저 안에서만.
+      <div className="text-center mb-6 sm:mb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-1">AlphaK</h1>
+        <p className="text-sm text-muted-foreground mb-5">
+          {formatToday()} · {getGreeting()}
         </p>
+
+        {/* 검색바 */}
+        <div className="relative max-w-md mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="search"
+              aria-label="도구 검색"
+              placeholder="도구 검색..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+            />
+          </div>
+
+          {/* 검색 결과 드롭다운 */}
+          {searchFocused && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border bg-card shadow-lg z-50 overflow-hidden">
+              {searchResults.map((tool) => (
+                <button
+                  key={tool.href}
+                  type="button"
+                  className="w-full text-left px-4 py-2.5 hover:bg-accent transition-colors"
+                  onMouseDown={() => {
+                    setSearchQuery("");
+                    router.push(tool.href);
+                  }}
+                >
+                  <p className="text-sm font-medium">{tool.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* ── 도구 모음 배너 ── */}
         <Link
           href="/tools"
@@ -219,6 +306,25 @@ export default function Home() {
           <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
         </Link>
 
+        {/* ── 즐겨찾기 도구 (최대 3개) ── */}
+        {favoriteTools.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {favoriteTools.map((tool) => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="group flex items-center gap-3 p-4 rounded-lg border border-yellow-400/30 bg-yellow-400/5 hover:border-yellow-400/60 hover:shadow-sm transition-all"
+              >
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-medium text-sm group-hover:text-primary transition-colors">{tool.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
         {/* ── 금융 시장 ── */}
         <section>
           <div className="flex items-center justify-between mb-3">
@@ -231,7 +337,7 @@ export default function Home() {
           </div>
 
           {financeError ? (
-            <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+            <div role="alert" className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
               {financeError}
             </div>
           ) : (
@@ -267,6 +373,7 @@ export default function Home() {
                           {formatPrice(symbol, q.price)}
                         </p>
                         <p className={`text-xs font-medium tabular-nums ${color}`}>
+                          <span className="sr-only">{up ? "상승" : down ? "하락" : "보합"}</span>
                           {formatChange(symbol, q.change)} ({up ? "+" : ""}{q.changePercent.toFixed(2)}%)
                         </p>
                       </Link>
@@ -288,7 +395,7 @@ export default function Home() {
           </div>
 
           {booksError ? (
-            <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+            <div role="alert" className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
               {booksError}
             </div>
           ) : (
@@ -388,7 +495,7 @@ export default function Home() {
           </div>
 
           {steamError ? (
-            <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+            <div role="alert" className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
               {steamError}
             </div>
           ) : (

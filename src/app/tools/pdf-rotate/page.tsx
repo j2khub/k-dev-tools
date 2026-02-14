@@ -5,7 +5,6 @@ import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, RotateCw, Download } from "lucide-react";
-import { PDFDocument, degrees } from "pdf-lib";
 
 async function getPdfjs() {
   const lib = await import("pdfjs-dist");
@@ -44,6 +43,7 @@ export default function PdfRotate() {
     });
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const pdf = await PDFDocument.load(buffer);
       const pageCount = pdf.getPageCount();
 
@@ -96,6 +96,7 @@ export default function PdfRotate() {
     setProcessing(true);
 
     try {
+      const { PDFDocument, degrees } = await import("pdf-lib");
       const pdf = await PDFDocument.load(pdfBytes);
       const pages = pdf.getPages();
 

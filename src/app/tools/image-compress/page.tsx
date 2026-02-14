@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import imageCompression from "browser-image-compression";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -46,6 +45,7 @@ export default function ImageCompress() {
     setCompressing(true);
     setProgress(0);
     try {
+      const { default: imageCompression } = await import("browser-image-compression");
       const result = await imageCompression(original, {
         maxSizeMB: 10,
         maxWidthOrHeight: maxWidth,

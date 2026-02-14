@@ -122,6 +122,7 @@ function QuoteCard({ symbol, data }: { symbol: string; data?: QuoteData }) {
         <span className="text-sm text-muted-foreground font-medium">
           {label.name}
         </span>
+        <span className="sr-only">{isUp ? "상승" : isDown ? "하락" : "보합"}</span>
         {isUp ? (
           <ArrowUpRight className={`h-4 w-4 ${colorClass}`} />
         ) : isDown ? (

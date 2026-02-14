@@ -5,7 +5,6 @@ import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, Download, X, ChevronUp, ChevronDown } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
 
 async function getPdfjs() {
   const lib = await import("pdfjs-dist");
@@ -60,6 +59,7 @@ export default function PdfReorder() {
       });
 
       try {
+        const { PDFDocument } = await import("pdf-lib");
         const pdf = await PDFDocument.load(buffer);
         const pages = pdf.getPageCount();
         setPdfBytes(buffer);
@@ -125,6 +125,7 @@ export default function PdfReorder() {
     setError(null);
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const srcDoc = await PDFDocument.load(pdfBytes);
       const newDoc = await PDFDocument.create();
       const copiedPages = await newDoc.copyPages(srcDoc, pageOrder);

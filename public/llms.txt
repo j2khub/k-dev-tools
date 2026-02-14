@@ -1,0 +1,32 @@
+# AlphaK Tools
+
+> 빠르고 무료인 오픈소스 온라인 도구 모음
+
+AlphaK Tools는 70개 이상의 무료 온라인 도구를 제공합니다.
+모든 데이터는 브라우저에서만 처리되며, 서버로 전송되지 않습니다.
+
+## 주요 기능
+
+- PDF 도구: 분할, 병합, 이미지 변환, 텍스트 추출, 회전, 재정렬
+- 계산기: 백분율, 날짜 차이, 디데이, 단위 변환, BMI, 연봉, 부가세, 대출이자, 퇴직금, 시급, 평수, 데이터 용량
+- 변환 도구: JSON, CSV, YAML, XML, 마크다운 포맷 변환
+- 텍스트 도구: Diff 비교, 마크다운 미리보기, 글자수 카운터, 한글/유니코드 변환
+- 이미지 도구: 리사이즈, 압축, WebP 변환, 색상 변환, WCAG 대비 검사
+- 생성기: UUID, 해시, 랜덤 문자열, QR 코드, Cron 표현식
+- 개발 도구: CSS 인라이너, cURL→fetch, JWT 파서, Regex 테스터, 서브넷 계산기
+
+## 특수 페이지
+
+- 금융 시장: 실시간 주요 지수 및 환율 정보
+- Steam 트렌드: Steam 인기 게임 및 할인 정보
+- 베스트셀러 도서: 알라딘 베스트셀러 도서 목록
+- 공휴일 달력: 한국 공휴일 및 대체공휴일 정보
+
+## 링크
+
+- 홈: https://k-dev-tools.alphak.workers.dev/
+- 도구 목록: https://k-dev-tools.alphak.workers.dev/tools/
+- 금융: https://k-dev-tools.alphak.workers.dev/finance/
+- Steam: https://k-dev-tools.alphak.workers.dev/steam/
+- 도서: https://k-dev-tools.alphak.workers.dev/books/
+- 달력: https://k-dev-tools.alphak.workers.dev/calendar/

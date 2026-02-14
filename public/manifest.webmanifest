@@ -1,0 +1,21 @@
+{
+  "name": "AlphaK Tools",
+  "short_name": "AlphaK",
+  "description": "빠르고 무료인 온라인 도구 모음",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

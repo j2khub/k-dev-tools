@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { marked } from "marked";
+import { useState, useEffect } from "react";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -22,14 +21,21 @@ console.log("hello");
 
 export default function MarkdownToHtmlPage() {
   const [input, setInput] = useState(defaultMarkdown);
+  const [html, setHtml] = useState("");
   const { copy, copied } = useCopyToClipboard();
 
-  const html = useMemo(() => {
-    try {
-      return marked(input) as string;
-    } catch {
-      return "변환 오류";
-    }
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { marked } = await import("marked");
+        const result = await marked(input);
+        if (!cancelled) setHtml(result as string);
+      } catch {
+        if (!cancelled) setHtml("변환 오류");
+      }
+    })();
+    return () => { cancelled = true; };
   }, [input]);
 
   return (

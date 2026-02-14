@@ -5,7 +5,6 @@ import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, Download } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
 
 interface SplitResult {
   label: string;
@@ -105,6 +104,7 @@ export default function PdfSplit() {
     });
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const pdf = await PDFDocument.load(buffer);
       const pages = pdf.getPageCount();
       setPdfBytes(buffer);
@@ -133,6 +133,7 @@ export default function PdfSplit() {
       // Clean up previous blob URLs
       results.forEach((r) => URL.revokeObjectURL(r.url));
 
+      const { PDFDocument } = await import("pdf-lib");
       const newResults: SplitResult[] = [];
 
       for (const pages of ranges) {

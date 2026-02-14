@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { Copy, Check } from "lucide-react";
-import yaml from "js-yaml";
 
 export default function YamlToJson() {
   const [input, setInput] = useState("");
@@ -15,7 +14,7 @@ export default function YamlToJson() {
   const [error, setError] = useState("");
   const { copied, copy } = useCopyToClipboard();
 
-  const handleConvert = (value: string) => {
+  const handleConvert = async (value: string) => {
     setInput(value);
     if (!value.trim()) {
       setOutput("");
@@ -23,6 +22,7 @@ export default function YamlToJson() {
       return;
     }
     try {
+      const yaml = await import("js-yaml");
       const parsed = yaml.load(value);
       setOutput(JSON.stringify(parsed, null, 2));
       setError("");

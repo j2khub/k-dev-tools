@@ -26,7 +26,9 @@ export function ToolCard({ tool, variant = "default" }: ToolCardProps) {
     >
       <button
         type="button"
-        className="absolute top-3 right-3 p-1 rounded-md hover:bg-accent transition-colors"
+        aria-label={favorited ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+        aria-pressed={favorited}
+        className="absolute top-3 right-3 p-1.5 rounded-md hover:bg-accent transition-colors"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,11 @@ export default function SvgViewer() {
   const { copied, copy } = useCopyToClipboard();
 
   const isSvg = input.trim().startsWith("<svg") || input.trim().startsWith("<?xml");
+
+  const sanitizedSvg = useMemo(() => {
+    if (!isSvg) return "";
+    return DOMPurify.sanitize(input, { USE_PROFILES: { svg: true, svgFilters: true } });
+  }, [input, isSvg]);
 
   const handleDownload = () => {
     const blob = new Blob([input], { type: "image/svg+xml" });
@@ -71,7 +77,7 @@ export default function SvgViewer() {
             </div>
             <div className="flex-1 min-h-[300px] border rounded-md flex items-center justify-center p-4 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZjBmMGYwIi8+PHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmMGYwZjAiLz48L3N2Zz4=')]">
               {isSvg ? (
-                <div dangerouslySetInnerHTML={{ __html: input }} className="max-w-full max-h-full" />
+                <div dangerouslySetInnerHTML={{ __html: sanitizedSvg }} className="max-w-full max-h-full" />
               ) : (
                 <span className="text-sm text-muted-foreground">
                   {input ? "유효한 SVG 코드를 입력하세요" : "SVG 코드를 입력하면 미리보기가 표시됩니다"}

@@ -21,7 +21,9 @@ export default function QrGeneratorPage() {
       margin: 2,
       errorCorrectionLevel: errorLevel,
       color: { dark: "#000000", light: "#ffffff" },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error("QR 생성 실패:", err);
+    });
   }, [text, size, errorLevel]);
 
   const handleDownload = () => {

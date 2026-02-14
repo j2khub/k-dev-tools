@@ -5,7 +5,6 @@ import { ToolLayout } from "@/components/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, Download, X, ChevronUp, ChevronDown, Plus } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
 
 interface ImageItem {
   id: string;
@@ -111,6 +110,7 @@ export default function ImageToPdf() {
     setConverting(true);
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       const pdfDoc = await PDFDocument.create();
 
       for (const item of images) {
