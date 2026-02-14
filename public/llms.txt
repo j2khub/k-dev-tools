@@ -20,13 +20,15 @@ AlphaK Tools는 70개 이상의 무료 온라인 도구를 제공합니다.
 - 금융 시장: 실시간 주요 지수 및 환율 정보
 - Steam 트렌드: Steam 인기 게임 및 할인 정보
 - 베스트셀러 도서: 알라딘 베스트셀러 도서 목록
+- 날씨: 한국 주요 도시 현재 날씨 및 7일 예보
 - 공휴일 달력: 한국 공휴일 및 대체공휴일 정보
 
 ## 링크
 
-- 홈: https://k-dev-tools.alphak.workers.dev/
-- 도구 목록: https://k-dev-tools.alphak.workers.dev/tools/
-- 금융: https://k-dev-tools.alphak.workers.dev/finance/
-- Steam: https://k-dev-tools.alphak.workers.dev/steam/
-- 도서: https://k-dev-tools.alphak.workers.dev/books/
-- 달력: https://k-dev-tools.alphak.workers.dev/calendar/
+- 홈: https://tools.alphak.workers.dev/
+- 도구 목록: https://tools.alphak.workers.dev/tools/
+- 금융: https://tools.alphak.workers.dev/finance/
+- Steam: https://tools.alphak.workers.dev/steam/
+- 도서: https://tools.alphak.workers.dev/books/
+- 날씨: https://tools.alphak.workers.dev/weather/
+- 달력: https://tools.alphak.workers.dev/calendar/

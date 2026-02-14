@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://k-dev-tools.alphak.workers.dev";
+const SITE_URL = "https://tools.alphak.workers.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

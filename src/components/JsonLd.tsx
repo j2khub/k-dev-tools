@@ -1,4 +1,4 @@
-const SITE_URL = "https://k-dev-tools.alphak.workers.dev";
+const SITE_URL = "https://tools.alphak.workers.dev";
 
 export function WebSiteJsonLd() {
   const jsonLd = {

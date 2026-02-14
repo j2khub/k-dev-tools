@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
-const SITE_URL = "https://k-dev-tools.alphak.workers.dev";
+const SITE_URL = "https://tools.alphak.workers.dev";
 
 // Parse tools-list.ts to extract tool hrefs
 const toolsListPath = resolve(__dirname, "../src/lib/tools-list.ts");

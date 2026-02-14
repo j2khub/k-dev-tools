@@ -16,4 +16,4 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: https://k-dev-tools.alphak.workers.dev/sitemap.xml
+Sitemap: https://tools.alphak.workers.dev/sitemap.xml
