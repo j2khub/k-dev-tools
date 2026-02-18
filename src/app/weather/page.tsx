@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CloudSun, Clock, Droplets, Wind, Thermometer, Sunrise, Sunset } from "lucide-react";
+import { fetchWeatherDirect } from "@/lib/weather-client";
 
 // ── Types ──
 
@@ -101,9 +102,7 @@ export default function WeatherPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch("/api/weather/forecast");
-      if (!res.ok) throw new Error("날씨 데이터를 불러올 수 없습니다");
-      const json = await res.json();
+      const json = await fetchWeatherDirect();
       setCities(json.cities);
       setLastUpdated(json.timestamp);
       setError(null);

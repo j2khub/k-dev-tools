@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -41,7 +40,14 @@ function hello() {
 
 export default function MarkdownPreviewPage() {
   const [input, setInput] = useState(defaultMarkdown);
-  const html = DOMPurify.sanitize(marked(input) as string);
+  const purifyRef = useRef<typeof import("isomorphic-dompurify").default | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    import("isomorphic-dompurify").then((m) => { purifyRef.current = m.default; setReady(true); });
+  }, []);
+
+  const html = ready && purifyRef.current ? purifyRef.current.sanitize(marked(input) as string) : "";
 
   return (
     <ToolLayout title="마크다운 미리보기" description="마크다운 텍스트를 실시간으로 렌더링하여 미리봅니다">

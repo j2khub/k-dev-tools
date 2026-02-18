@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useFavorites } from "@/hooks/useFavorites";
 import { tools } from "@/lib/tools-list";
+import { fetchWeatherDirect } from "@/lib/weather-client";
 import {
   y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026,
 } from "@hyunbinseo/holidays-kr";
@@ -267,9 +268,7 @@ export default function Home() {
 
   const fetchWeather = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch("/api/weather/forecast", { signal });
-      if (!res.ok) throw new Error("날씨 데이터를 불러올 수 없습니다");
-      const json = await res.json();
+      const json = await fetchWeatherDirect(signal);
       setWeatherCities(json.cities);
       setWeatherError(null);
     } catch (e) {

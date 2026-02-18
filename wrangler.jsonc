@@ -6,5 +6,14 @@
   "assets": {
     "directory": "./out",
     "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "WEATHER_CACHE",
+      "id": "3b5ea2a479764344857210f2764e32fc"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/30 * * * *"]
   }
 }

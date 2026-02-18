@@ -3,11 +3,12 @@
 import { handleFinanceQuotes } from "./api/finance";
 import { handleSteamFeatured } from "./api/steam";
 import { handleAladinBestsellers } from "./api/aladin";
-import { handleWeatherForecast } from "./api/weather";
+import { handleWeatherForecast, refreshWeatherCache } from "./api/weather";
 
 interface Env {
   ASSETS: Fetcher;
   ALADIN_API_KEY: string;
+  WEATHER_CACHE: KVNamespace;
 }
 
 const SECURITY_HEADERS: Record<string, string> = {
@@ -29,6 +30,10 @@ function withSecurityHeaders(response: Response): Response {
 }
 
 export default {
+  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+    await refreshWeatherCache(env.WEATHER_CACHE);
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
@@ -43,7 +48,7 @@ export default {
       return withSecurityHeaders(await handleAladinBestsellers(env.ALADIN_API_KEY));
     }
     if (url.pathname === "/api/weather/forecast") {
-      return withSecurityHeaders(await handleWeatherForecast());
+      return withSecurityHeaders(await handleWeatherForecast(env.WEATHER_CACHE));
     }
 
     // 정적 자산 폴백

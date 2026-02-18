@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -12,12 +11,17 @@ import { Copy, Check, Download } from "lucide-react";
 export default function SvgViewer() {
   const [input, setInput] = useState("");
   const { copied, copy } = useCopyToClipboard();
+  const purifyRef = useRef<typeof import("isomorphic-dompurify").default | null>(null);
+
+  useEffect(() => {
+    import("isomorphic-dompurify").then((m) => { purifyRef.current = m.default; });
+  }, []);
 
   const isSvg = input.trim().startsWith("<svg") || input.trim().startsWith("<?xml");
 
   const sanitizedSvg = useMemo(() => {
-    if (!isSvg) return "";
-    return DOMPurify.sanitize(input, { USE_PROFILES: { svg: true, svgFilters: true } });
+    if (!isSvg || !purifyRef.current) return "";
+    return purifyRef.current.sanitize(input, { USE_PROFILES: { svg: true, svgFilters: true } });
   }, [input, isSvg]);
 
   const handleDownload = () => {
