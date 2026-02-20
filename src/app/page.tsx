@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Wrench,
   TrendingUp,
-  Gamepad2,
   BookOpen,
   CalendarDays,
   CloudSun,
@@ -31,18 +30,6 @@ interface QuoteData {
   change: number;
   changePercent: number;
   currency: string;
-}
-
-interface SteamGame {
-  id: number;
-  name: string;
-  discounted: boolean;
-  discount_percent: number;
-  original_price: number | null;
-  final_price: number | null;
-  currency: string;
-  large_capsule_image: string;
-  small_capsule_image: string;
 }
 
 interface BookItem {
@@ -162,15 +149,6 @@ function formatChange(symbol: string, change: number): string {
   return prefix + change.toFixed(2);
 }
 
-// ── Steam formatting ───────────────────────────────────
-
-function formatKRW(cents: number | null): string {
-  if (cents === null) return "";
-  if (cents === 0) return "무료";
-  const won = Math.round(cents / 100);
-  return "₩" + won.toLocaleString("ko-KR");
-}
-
 // ── Greeting ───────────────────────────────────────────
 
 function getGreeting(): string {
@@ -201,11 +179,6 @@ export default function Home() {
   const [quotes, setQuotes] = useState<Record<string, QuoteData>>({});
   const [financeLoading, setFinanceLoading] = useState(true);
   const [financeError, setFinanceError] = useState<string | null>(null);
-
-  // Steam state
-  const [steamGames, setSteamGames] = useState<SteamGame[]>([]);
-  const [steamLoading, setSteamLoading] = useState(true);
-  const [steamError, setSteamError] = useState<string | null>(null);
 
   // Books state
   const [books, setBooks] = useState<BookItem[]>([]);
@@ -251,21 +224,6 @@ export default function Home() {
     }
   }, []);
 
-  const fetchSteam = useCallback(async (signal?: AbortSignal) => {
-    try {
-      const res = await fetch("/api/steam/featured", { signal });
-      if (!res.ok) throw new Error("Steam 데이터를 불러올 수 없습니다");
-      const json = await res.json();
-      setSteamGames(json.specials?.slice(0, 4) ?? []);
-      setSteamError(null);
-    } catch (e) {
-      if (e instanceof DOMException && e.name === "AbortError") return;
-      setSteamError(e instanceof Error ? e.message : "알 수 없는 오류");
-    } finally {
-      setSteamLoading(false);
-    }
-  }, []);
-
   const fetchWeather = useCallback(async (signal?: AbortSignal) => {
     try {
       const json = await fetchWeatherDirect(signal);
@@ -298,11 +256,10 @@ export default function Home() {
     const controller = new AbortController();
     const { signal } = controller;
     fetchFinance(signal);
-    fetchSteam(signal);
     fetchBooks(signal);
     fetchWeather(signal);
     return () => controller.abort();
-  }, [fetchFinance, fetchSteam, fetchBooks, fetchWeather]);
+  }, [fetchFinance, fetchBooks, fetchWeather]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-5 sm:py-8">
@@ -596,67 +553,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* ── Steam 할인 특가 ── */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Gamepad2 className="h-5 w-5" /> Steam 할인 특가
-            </h2>
-            <Link href="/steam" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              더보기 →
-            </Link>
-          </div>
-
-          {steamError ? (
-            <div role="alert" className="p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
-              {steamError}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {steamLoading
-                ? Array.from({ length: 4 }, (_, i) => (
-                    <div key={i} className="rounded-lg border bg-card overflow-hidden animate-pulse">
-                      <div className="aspect-[231/87] bg-muted" />
-                      <div className="p-2.5">
-                        <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-                        <div className="h-4 bg-muted rounded w-1/2" />
-                      </div>
-                    </div>
-                  ))
-                : steamGames.map((game) => (
-                    <Link
-                      key={game.id}
-                      href="/steam"
-                      className="group rounded-lg border bg-card overflow-hidden hover:border-primary/30 transition-colors"
-                    >
-                      <div className="overflow-hidden">
-                        <img
-                          src={game.large_capsule_image}
-                          alt={game.name}
-                          className="w-full aspect-[231/87] object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="p-2.5">
-                        <p className="text-sm font-medium line-clamp-1" title={game.name}>
-                          {game.name}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          {game.discount_percent > 0 && (
-                            <span className="px-1.5 py-0.5 text-xs font-bold rounded bg-green-600 text-white">
-                              -{game.discount_percent}%
-                            </span>
-                          )}
-                          <span className="text-sm font-medium">
-                            {formatKRW(game.final_price)}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-            </div>
-          )}
-        </section>
       </div>
     </div>
   );

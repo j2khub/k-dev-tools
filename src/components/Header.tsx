@@ -13,7 +13,6 @@ const navLinks = [
   { href: "/books", label: "도서" },
   { href: "/weather", label: "날씨" },
   { href: "/calendar", label: "달력" },
-  { href: "/steam", label: "스팀" },
 ];
 
 export function Header() {

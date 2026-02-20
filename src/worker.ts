@@ -1,7 +1,6 @@
 // Cloudflare Worker 진입점 — API 라우팅 + 정적 자산 폴백
 
 import { handleFinanceQuotes } from "./api/finance";
-import { handleSteamFeatured } from "./api/steam";
 import { handleAladinBestsellers } from "./api/aladin";
 import { handleWeatherForecast, refreshWeatherCache } from "./api/weather";
 
@@ -41,10 +40,7 @@ export default {
     if (url.pathname === "/api/finance/quotes") {
       return withSecurityHeaders(await handleFinanceQuotes());
     }
-    if (url.pathname === "/api/steam/featured") {
-      return withSecurityHeaders(await handleSteamFeatured());
-    }
-    if (url.pathname === "/api/aladin/bestsellers") {
+if (url.pathname === "/api/aladin/bestsellers") {
       return withSecurityHeaders(await handleAladinBestsellers(env.ALADIN_API_KEY));
     }
     if (url.pathname === "/api/weather/forecast") {
