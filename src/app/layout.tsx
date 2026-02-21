@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { WebSiteJsonLd } from "@/components/JsonLd";
 import "./globals.css";
 
@@ -92,6 +93,7 @@ export default function RootLayout({
           </a>
           <Header />
           <main id="main-content">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
