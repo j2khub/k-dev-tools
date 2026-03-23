@@ -49,6 +49,79 @@ export const tools: Tool[] = [
     href: "/tools/pdf-reorder",
     category: "PDF",
   },
+  // ── 이미지 ──
+  {
+    name: "이미지 블러",
+    description: "이미지의 원하는 영역을 드래그하여 블러(모자이크) 처리합니다",
+    href: "/tools/image-blur",
+    category: "이미지",
+  },
+  {
+    name: "이미지 리사이즈",
+    description: "이미지 크기를 원하는 비율이나 픽셀로 조절합니다",
+    href: "/tools/image-resizer",
+    category: "이미지",
+  },
+  {
+    name: "이미지 압축",
+    description: "이미지 용량을 줄입니다. 품질과 최대 폭을 조절할 수 있습니다",
+    href: "/tools/image-compress",
+    category: "이미지",
+  },
+  {
+    name: "WebP 변환기",
+    description: "이미지를 WebP 포맷으로 변환합니다",
+    href: "/tools/webp-converter",
+    category: "이미지",
+  },
+  {
+    name: "SVG 뷰어",
+    description: "SVG 코드를 붙여넣으면 실시간으로 미리보기합니다",
+    href: "/tools/svg-viewer",
+    category: "이미지",
+  },
+  {
+    name: "이미지 → Base64",
+    description: "이미지 파일을 Base64 문자열로 변환합니다",
+    href: "/tools/image-to-base64",
+    category: "이미지",
+  },
+  {
+    name: "Base64 → 이미지",
+    description: "Base64 문자열을 이미지로 변환하여 미리보기합니다",
+    href: "/tools/base64-to-image",
+    category: "이미지",
+  },
+  {
+    name: "HEX → RGB 변환",
+    description: "HEX 색상 코드를 RGB 값으로 변환합니다",
+    href: "/tools/hex-to-rgb",
+    category: "이미지",
+  },
+  {
+    name: "RGB → HEX 변환",
+    description: "RGB 값을 HEX 색상 코드로 변환합니다",
+    href: "/tools/rgb-to-hex",
+    category: "이미지",
+  },
+  {
+    name: "WCAG 색상 대비 검사",
+    description: "전경/배경 색상의 대비율과 접근성 기준 충족 여부를 확인합니다",
+    href: "/tools/wcag-contrast",
+    category: "이미지",
+  },
+  {
+    name: "색상 피커/팔레트",
+    description: "색상을 선택하고 다양한 형식으로 변환하며 팔레트를 생성합니다",
+    href: "/tools/color-picker",
+    category: "이미지",
+  },
+  {
+    name: "이미지 좌표 추출",
+    description: "이미지에서 클릭 또는 드래그로 좌표를 추출하고 JSON, CSV, CSS 형식으로 내보냅니다",
+    href: "/tools/image-coordinates",
+    category: "이미지",
+  },
   // ── 계산기 ──
   {
     name: "백분율 계산기",
@@ -225,67 +298,6 @@ export const tools: Tool[] = [
     description: "숫자 금액을 한글 표기로 변환합니다",
     href: "/tools/amount-to-korean",
     category: "텍스트",
-  },
-  // ── 이미지 ──
-  {
-    name: "이미지 리사이즈",
-    description: "이미지 크기를 원하는 비율이나 픽셀로 조절합니다",
-    href: "/tools/image-resizer",
-    category: "이미지",
-  },
-  {
-    name: "이미지 압축",
-    description: "이미지 용량을 줄입니다. 품질과 최대 폭을 조절할 수 있습니다",
-    href: "/tools/image-compress",
-    category: "이미지",
-  },
-  {
-    name: "WebP 변환기",
-    description: "이미지를 WebP 포맷으로 변환합니다",
-    href: "/tools/webp-converter",
-    category: "이미지",
-  },
-  {
-    name: "SVG 뷰어",
-    description: "SVG 코드를 붙여넣으면 실시간으로 미리보기합니다",
-    href: "/tools/svg-viewer",
-    category: "이미지",
-  },
-  {
-    name: "이미지 → Base64",
-    description: "이미지 파일을 Base64 문자열로 변환합니다",
-    href: "/tools/image-to-base64",
-    category: "이미지",
-  },
-  {
-    name: "Base64 → 이미지",
-    description: "Base64 문자열을 이미지로 변환하여 미리보기합니다",
-    href: "/tools/base64-to-image",
-    category: "이미지",
-  },
-  {
-    name: "HEX → RGB 변환",
-    description: "HEX 색상 코드를 RGB 값으로 변환합니다",
-    href: "/tools/hex-to-rgb",
-    category: "이미지",
-  },
-  {
-    name: "RGB → HEX 변환",
-    description: "RGB 값을 HEX 색상 코드로 변환합니다",
-    href: "/tools/rgb-to-hex",
-    category: "이미지",
-  },
-  {
-    name: "WCAG 색상 대비 검사",
-    description: "전경/배경 색상의 대비율과 접근성 기준 충족 여부를 확인합니다",
-    href: "/tools/wcag-contrast",
-    category: "이미지",
-  },
-  {
-    name: "색상 피커/팔레트",
-    description: "색상을 선택하고 다양한 형식으로 변환하며 팔레트를 생성합니다",
-    href: "/tools/color-picker",
-    category: "이미지",
   },
   // ── 생성기 ──
   {
