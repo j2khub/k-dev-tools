@@ -336,6 +336,12 @@ export const tools: Tool[] = [
     href: "/tools/qr-generator",
     category: "생성기",
   },
+  {
+    name: "QR 코드 리더",
+    description: "이미지 업로드 또는 카메라로 QR 코드를 스캔합니다",
+    href: "/tools/qr-reader",
+    category: "생성기",
+  },
   // ── 개발도구 ──
   {
     name: "CSS 인라이너",
