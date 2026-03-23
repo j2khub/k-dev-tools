@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+  turbopack: {
+    resolveAlias: {
+      fs: './src/lib/empty.js',
+    },
+  },
 };
 
 export default nextConfig;

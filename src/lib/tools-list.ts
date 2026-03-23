@@ -49,6 +49,12 @@ export const tools: Tool[] = [
     href: "/tools/pdf-reorder",
     category: "PDF",
   },
+  {
+    name: "HWP 뷰어",
+    description: "HWP/HWPX 파일의 텍스트, 표, 이미지를 추출하여 표시합니다",
+    href: "/tools/hwpx-viewer",
+    category: "PDF",
+  },
   // ── 이미지 ──
   {
     name: "이미지 블러",
