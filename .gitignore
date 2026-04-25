@@ -48,3 +48,6 @@ next-env.d.ts
 nul
 weather_kv.json
 weather_raw.json
+
+# generated from node_modules by scripts/copy-rhwp-wasm.ts
+public/rhwp_bg.wasm

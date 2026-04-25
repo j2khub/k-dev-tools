@@ -6,8 +6,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "next dev",
-    "prebuild": "tsx scripts/generate-tool-layouts.ts",
+    "dev": "tsx scripts/copy-rhwp-wasm.ts && next dev",
+    "prebuild": "tsx scripts/copy-rhwp-wasm.ts && tsx scripts/generate-tool-layouts.ts",
     "build": "next build",
     "postbuild": "tsx scripts/generate-sitemap.ts",
     "start": "next start",
@@ -19,6 +19,7 @@
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tabs": "^1.1.13",
+    "@rhwp/core": "0.7.3",
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

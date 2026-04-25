@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/ToolLayout";
 import { Card } from "@/components/ui/card";
 import {
@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Image as ImageIcon,
 } from "lucide-react";
+import { loadRhwp, ensureRhwpFonts } from "@/lib/rhwp-client";
 
 interface DocSection {
   index: number;
@@ -51,14 +52,23 @@ export default function HwpViewerPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [viewMode, setViewMode] = useState<"formatted" | "text">("text");
+  const [viewMode, setViewMode] = useState<"formatted" | "text" | "rendered">(
+    "text"
+  );
   const [expandedSections, setExpandedSections] = useState<Set<number>>(
     new Set()
   );
   const [fileName, setFileName] = useState("");
 
+  const [renderState, setRenderState] = useState<
+    "idle" | "loading" | "done" | "error"
+  >("idle");
+  const [renderError, setRenderError] = useState<string | null>(null);
+  const [renderedSvgs, setRenderedSvgs] = useState<string[] | null>(null);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const imageUrlsRef = useRef<string[]>([]);
+  const rawBufferRef = useRef<ArrayBuffer | null>(null);
 
   const cleanup = useCallback(() => {
     imageUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
@@ -332,8 +342,13 @@ export default function HwpViewerPage() {
       setError(null);
       setResult(null);
       setFileName(file.name);
+      setRenderState("idle");
+      setRenderError(null);
+      setRenderedSvgs(null);
+      rawBufferRef.current = null;
 
       try {
+        rawBufferRef.current = await file.arrayBuffer();
         const parsed = isHwpx ? await parseHwpx(file) : await parseHwp(file);
         setResult(parsed);
       } catch (err) {
@@ -393,6 +408,39 @@ export default function HwpViewerPage() {
     link.click();
     URL.revokeObjectURL(link.href);
   };
+
+  const doRenderSvg = useCallback(async () => {
+    if (!rawBufferRef.current) return;
+    setRenderState("loading");
+    setRenderError(null);
+    try {
+      await ensureRhwpFonts();
+      const mod = await loadRhwp();
+      const doc = new mod.HwpDocument(new Uint8Array(rawBufferRef.current));
+      const total = doc.pageCount();
+      const limit = Math.min(total, 50);
+      const svgs: string[] = [];
+      for (let i = 0; i < limit; i++) {
+        svgs.push(doc.renderPageSvg(i));
+      }
+      doc.free();
+      const DOMPurify = (await import("isomorphic-dompurify")).default;
+      const safe = svgs.map((s) =>
+        DOMPurify.sanitize(s, { USE_PROFILES: { svg: true, svgFilters: true } })
+      );
+      setRenderedSvgs(safe);
+      setRenderState("done");
+    } catch (err) {
+      setRenderError(err instanceof Error ? err.message : "렌더링 실패");
+      setRenderState("error");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (viewMode === "rendered" && renderState === "idle" && rawBufferRef.current) {
+      void doRenderSvg();
+    }
+  }, [viewMode, renderState, doRenderSvg]);
 
   const toggleSection = (index: number) => {
     setExpandedSections((prev) => {
@@ -491,13 +539,25 @@ export default function HwpViewerPage() {
                 <button
                   type="button"
                   onClick={() => setViewMode("text")}
-                  className={`px-3 py-1.5 rounded-r-md transition-colors ${
+                  className={`px-3 py-1.5 transition-colors border-x ${
                     viewMode === "text"
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-accent"
                   }`}
                 >
                   텍스트
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("rendered")}
+                  className={`px-3 py-1.5 rounded-r-md transition-colors ${
+                    viewMode === "rendered"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent"
+                  }`}
+                  title="원본 레이아웃을 SVG로 렌더링 (최초 클릭 시 WASM 3.5MB 로드)"
+                >
+                  문서 렌더링
                 </button>
               </div>
 
@@ -625,10 +685,52 @@ export default function HwpViewerPage() {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : viewMode === "text" ? (
               <pre className="p-4 rounded-lg border bg-muted/30 text-sm whitespace-pre-wrap break-all max-h-[600px] overflow-y-auto font-mono">
                 {getPlainText()}
               </pre>
+            ) : (
+              <div className="rounded-lg border bg-muted/20 p-3">
+                {renderState === "loading" && (
+                  <div className="flex flex-col items-center gap-3 py-12">
+                    <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-muted-foreground">
+                      WASM 로드 및 문서 렌더링 중...
+                    </p>
+                  </div>
+                )}
+                {renderState === "error" && (
+                  <div className="text-center py-8 space-y-2">
+                    <p className="text-sm text-destructive">
+                      렌더링 실패: {renderError}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRenderState("idle");
+                        setRenderedSvgs(null);
+                      }}
+                      className="text-xs underline text-muted-foreground"
+                    >
+                      다시 시도
+                    </button>
+                  </div>
+                )}
+                {renderState === "done" && renderedSvgs && (
+                  <div className="space-y-3 max-h-[800px] overflow-y-auto">
+                    <p className="text-xs text-muted-foreground px-2">
+                      {renderedSvgs.length}개 페이지 (원본 레이아웃 렌더링)
+                    </p>
+                    {renderedSvgs.map((svg, i) => (
+                      <div
+                        key={i}
+                        className="bg-white rounded border overflow-auto [&_svg]:max-w-full [&_svg]:h-auto"
+                        dangerouslySetInnerHTML={{ __html: svg }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* 이미지 */}
