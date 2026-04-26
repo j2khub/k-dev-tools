@@ -337,6 +337,14 @@ export default function HwpViewerPage() {
         return;
       }
 
+      const MAX_FILE_BYTES = 50 * 1024 * 1024;
+      if (file.size > MAX_FILE_BYTES) {
+        setError(
+          `파일이 너무 큽니다 (${(file.size / 1024 / 1024).toFixed(1)} MB). 최대 50 MB까지 지원합니다.`
+        );
+        return;
+      }
+
       cleanup();
       setLoading(true);
       setError(null);
@@ -417,13 +425,16 @@ export default function HwpViewerPage() {
       await ensureRhwpFonts();
       const mod = await loadRhwp();
       const doc = new mod.HwpDocument(new Uint8Array(rawBufferRef.current));
-      const total = doc.pageCount();
-      const limit = Math.min(total, 50);
-      const svgs: string[] = [];
-      for (let i = 0; i < limit; i++) {
-        svgs.push(doc.renderPageSvg(i));
+      let svgs: string[] = [];
+      try {
+        const total = doc.pageCount();
+        const limit = Math.min(total, 50);
+        for (let i = 0; i < limit; i++) {
+          svgs.push(doc.renderPageSvg(i));
+        }
+      } finally {
+        doc.free();
       }
-      doc.free();
       const DOMPurify = (await import("isomorphic-dompurify")).default;
       const safe = svgs.map((s) =>
         DOMPurify.sanitize(s, { USE_PROFILES: { svg: true, svgFilters: true } })
